@@ -1,0 +1,15 @@
+{
+  "name": "golang-distributed-application",
+  "version": "1.0.0",
+  "description": "Demo project for demonstrating how to create a distributed application with Go",
+  "main": "main.go",
+  "scripts": {},
+  "keywords": [
+    "golang",
+    "distributed"
+  ],
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-shell": "^0.4.2"
+  }
+}
