@@ -7,8 +7,19 @@ import (
 	"github.com/streadway/amqp"
 )
 
-// Publish publishes message to RabbitMQ
-func Publish() {
+// RabbitMQ tests the publisher and consumer of RabbitMQ
+func RabbitMQ() {
+	// test RabbitMQ
+	go publish()
+	go consume()
+
+	// keep goroutines running
+	var hang string
+	fmt.Scanln(&hang)
+}
+
+// Publishes message to RabbitMQ
+func publish() {
 	conn, ch, q := getQueue()
 	defer conn.Close()
 	defer ch.Close()
@@ -23,8 +34,8 @@ func Publish() {
 	}
 }
 
-// Consume consumes message from RabbitMQ
-func Consume() {
+// Consumes message from RabbitMQ
+func consume() {
 	conn, ch, q := getQueue()
 	defer conn.Close()
 	defer ch.Close()

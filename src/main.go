@@ -1,19 +1,9 @@
 package main
 
-import (
-	"fmt"
-
-	"github.com/golang-distributed-application/src/test"
-)
+import "github.com/golang-distributed-application/src/powerplant/sensors"
 
 func main() {
-	test.PrintDummy()
-
-	// test RabbitMQ
-	go test.Publish()
-	go test.Consume()
-
-	// keep goroutines running
-	var hang string
-	fmt.Scanln(&hang)
+	// test.PrintDummy()
+	// test.RabbitMQ()
+	sensor.StartPublishingSensorData()
 }

@@ -25,5 +25,3 @@
         https://godoc.org/github.com/streadway/amqp, rabbitmq client with AMQP protocol
         Install: $ go get -u github.com/streadway/amqp
     * Postgres
-
-    *

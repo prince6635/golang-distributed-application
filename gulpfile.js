@@ -2,10 +2,11 @@ var gulp = require('gulp');
 var path = require('path');
 var shell = require('gulp-shell');
 
-var goPath = 'src/test/**/*.go';
+var testGoPath = 'src/test/**/*.go';
+var powerplantGoPath = 'src/powerplant/**/*.go'
 
 gulp.task('compilepkg', function() {
-  return gulp.src(goPath, {read: false})
+  return gulp.src([testGoPath, powerplantGoPath], {read: false})
     .pipe(shell(['go install github.com/golang-distributed-application/src/<%= stripPath(file.path) %>'],
       {
           templateData: {
@@ -20,5 +21,5 @@ gulp.task('compilepkg', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(goPath, ['compilepkg']);
+  gulp.watch([testGoPath, powerplantGoPath], ['compilepkg']);
 });
