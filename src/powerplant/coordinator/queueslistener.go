@@ -22,11 +22,13 @@ type QueuesListener struct {
 	conn    *amqp.Connection
 	ch      *amqp.Channel
 	sources map[string]<-chan amqp.Delivery // message receiving channel
+	ea      *EventAggregator                // publish events after receiving messages
 }
 
 func NewQueuesListener() *QueuesListener {
 	ql := QueuesListener{
 		sources: make(map[string]<-chan amqp.Delivery),
+		ea:      NewEventAggregator(),
 	}
 
 	ql.conn, ql.ch = queueutils.GetChannel(url)
@@ -92,6 +94,13 @@ func (ql *QueuesListener) AddListener(msgs <-chan amqp.Delivery) {
 
 		fmt.Printf("Received sensor reading data message: %v\n", sensorMsg)
 
-		// trigger an event
+		// publish an event
+		eventData := EventData{
+			Name:      sensorMsg.Name,
+			Timestamp: sensorMsg.Timestamp,
+			Value:     sensorMsg.Value,
+		}
+
+		ql.ea.PublishEvent("MessageReceived_"+msg.RoutingKey, eventData)
 	}
 }

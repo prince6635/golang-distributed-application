@@ -29,6 +29,6 @@
     * Sensors keep publishing reading data to message queues
     * Consumers keep consuming messages and generate events (This event pattern allows data sources and consumers to be decoupled from each other in a highly concurrent system)
     ```
-    $ go run src/powerplant/sensors/executor/main.go (consuming messages)
-    $ go run src/powerplant/coordinator/executor/main.go (publishing messages)
+    $ go run src/powerplant/coordinator/executor/main.go (consuming messages)
+    $ go run src/powerplant/sensors/executor/main.go (publishing messages)
     ```
