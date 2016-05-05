@@ -58,7 +58,6 @@ func StartPublishingSensorData() {
 	defer ch.Close()
 
 	publishSensorNameToSensorListQueue(ch, *name)
-
 	publishSensorDataToSensorQueue(ch)
 }
 
@@ -72,14 +71,26 @@ Payload:
 	sensor
 */
 func publishSensorNameToSensorListQueue(ch *amqp.Channel, sensorName string) {
-	sensorListQueue := queueutils.GetQueue(queueutils.SensorListQueue, ch)
 	msg := amqp.Publishing{Body: []byte(sensorName)}
+
+	/* // sensorListQueue is a queue created to ensure the queue name message being received
+	sensorListQueue := queueutils.GetQueue(queueutils.SensorListQueue, ch)
 	ch.Publish(
 		"",                   //exchange string,
 		sensorListQueue.Name, //key string,
 		false,                //mandatory bool,
 		false,                //immediate bool,
 		msg)                  //msg amqp.Publishing)
+	*/
+	// change to use
+	// now cosumers are responsible to ensure the messages being received by each one creating their own queue to listen to the messages
+	// need to use fanout exchange and empty routing key, so the messge will be published to every queue that's binded to the fanout exchange
+	ch.Publish(
+		"amq.fanout", //exchange string,
+		"",           //key string,
+		false,        //mandatory bool,
+		false,        //immediate bool,
+		msg)          //msg amqp.Publishing)
 }
 
 // record sensor reading data into sensor queue
@@ -111,6 +122,8 @@ func publishSensorDataToSensorQueue(ch *amqp.Channel) {
 		}
 
 		buffer.Reset()
+		// NOTE: need to create a new encoder every time
+		encoder = gob.NewEncoder(buffer)
 		encoder.Encode(sensorReadingMsg)
 
 		msg := amqp.Publishing{

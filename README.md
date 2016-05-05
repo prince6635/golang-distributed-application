@@ -25,3 +25,10 @@
         https://godoc.org/github.com/streadway/amqp, rabbitmq client with AMQP protocol
         Install: $ go get -u github.com/streadway/amqp
     * Postgres
+  * Flow
+    * Sensors keep publishing reading data to message queues
+    * Consumers keep consuming messages and generate events (This event pattern allows data sources and consumers to be decoupled from each other in a highly concurrent system)
+    ```
+    $ go run src/powerplant/sensors/executor/main.go (consuming messages)
+    $ go run src/powerplant/coordinator/executor/main.go (publishing messages)
+    ```
