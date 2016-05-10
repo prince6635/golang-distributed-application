@@ -57,8 +57,39 @@ func StartPublishingSensorData() {
 	defer conn.Close()
 	defer ch.Close()
 
-	publishSensorNameToSensorListQueue(ch, *name)
+	publishSensorNameToSensorListQueue(ch)
+	// By adding this, we don't need to start /coordinator/executor/main.go before sensors/executor/main.go
+	// so coordinator can discover the existed censors for the following function
+	keepListenDiscoverRequestFromCoordinator(ch)
+
 	publishSensorDataToSensorQueue(ch)
+}
+
+func keepListenDiscoverRequestFromCoordinator(ch *amqp.Channel) {
+	discoveryQueue := queueutils.GetQueue("", ch)
+	ch.QueueBind(
+		discoveryQueue.Name, //name string,
+		"",                  //key string,
+		queueutils.SensorDiscoveryExchange, //exchange string,
+		false, //noWait bool,
+		nil)   //args amqp.Table)
+	go listenForDiscoverRequestsFromCoordinator(discoveryQueue.Name, ch)
+}
+
+func listenForDiscoverRequestsFromCoordinator(discoveryQueueName string, ch *amqp.Channel) {
+	msgs, _ := ch.Consume(
+		discoveryQueueName, //queue string,
+		"",                 //consumer string,
+		true,               //autoAck bool,
+		false,              //exclusive bool,
+		false,              //noLocal bool,
+		false,              //noWait bool,
+		nil)                //args amqp.Table)
+
+	// every time it listens a discovery request from coordinator, it'll notify the coordinator about itself
+	for range msgs {
+		publishSensorNameToSensorListQueue(ch)
+	}
 }
 
 // record each sensor queue's name into sensor list queue
@@ -70,8 +101,8 @@ Payload:
 	Encoding: string
 	sensor
 */
-func publishSensorNameToSensorListQueue(ch *amqp.Channel, sensorName string) {
-	msg := amqp.Publishing{Body: []byte(sensorName)}
+func publishSensorNameToSensorListQueue(ch *amqp.Channel) {
+	msg := amqp.Publishing{Body: []byte(*name)}
 
 	/* // sensorListQueue is a queue created to ensure the queue name message being received
 	sensorListQueue := queueutils.GetQueue(queueutils.SensorListQueue, ch)

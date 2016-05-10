@@ -61,6 +61,9 @@ func (ql *QueuesListener) ListenForNewSource() {
 		false,  //noWait bool,
 		nil)    //args amqp.Table)
 
+	// this is the first place that the coordinator is listening the messages about sensors' routes
+	ql.DiscoverSensors()
+
 	fmt.Println("Listening for new sources")
 	for msg := range msgs {
 		fmt.Println("New source discovered")
@@ -103,4 +106,24 @@ func (ql *QueuesListener) AddListener(msgs <-chan amqp.Delivery) {
 
 		ql.ea.PublishEvent("MessageReceived_"+msg.RoutingKey, eventData)
 	}
+}
+
+func (ql *QueuesListener) DiscoverSensors() {
+	ql.ch.ExchangeDeclare(
+		queueutils.SensorDiscoveryExchange, //name string,
+		"fanout", //kind string,
+		false,    //durable bool,
+		false,    //autoDelete bool,
+		false,    //internal bool,
+		false,    //noWait bool,
+		nil)      //args amqp.Table)
+
+	// Now the coordinator can publish to the new exchange
+	ql.ch.Publish(
+		queueutils.SensorDiscoveryExchange, //exchange string,
+		// !!! sending empty string is enough to signal censors that we're looking for them.
+		"",                //key string,
+		false,             //mandatory bool,
+		false,             //immediate bool,
+		amqp.Publishing{}) //msg amqp.Publishing)
 }

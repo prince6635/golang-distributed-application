@@ -10,6 +10,9 @@ import (
 // SensorListQueue is the queue to record all sensor queues' names
 const SensorListQueue = "SensorList"
 
+// SensorDiscoveryExchange is the exchange name for queue listeners to discover previous started data queues if the coordinator started after the data queues
+const SensorDiscoveryExchange = "SensorDiscovery"
+
 // GetChannel returns the connection and channel from RabbitMQ
 func GetChannel(url string) (*amqp.Connection, *amqp.Channel) {
 	conn, err := amqp.Dial(url)
