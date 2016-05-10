@@ -25,14 +25,15 @@ func GetChannel(url string) (*amqp.Connection, *amqp.Channel) {
 }
 
 // GetQueue returns a queue from RabbitMQ
-func GetQueue(name string, ch *amqp.Channel) *amqp.Queue {
+func GetQueue(name string, ch *amqp.Channel, autoDelete bool) *amqp.Queue {
 	q, err := ch.QueueDeclare(
 		name,  //name string,
 		false, //durable bool,
-		false, //autoDelete bool,
-		false, //exclusive bool,
-		false, //noWait bool,
-		nil)   //args amqp.Table)
+		// !!! true will clean up the temp queues
+		autoDelete, //autoDelete bool,
+		false,      //exclusive bool,
+		false,      //noWait bool,
+		nil)        //args amqp.Table)
 
 	failOnError(err, "Failed to declare a queue")
 	return &q

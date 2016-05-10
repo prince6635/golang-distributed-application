@@ -41,7 +41,7 @@ func StartConsumingSensorData() {
 }
 
 func (ql *QueuesListener) ListenForNewSource() {
-	q := queueutils.GetQueue("", ql.ch)
+	q := queueutils.GetQueue("", ql.ch, true)
 
 	// bind the queue to receive fan-out messages
 	ql.ch.QueueBind(

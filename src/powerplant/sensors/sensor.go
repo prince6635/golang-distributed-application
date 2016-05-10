@@ -60,13 +60,13 @@ func StartPublishingSensorData() {
 	publishSensorNameToSensorListQueue(ch)
 	// By adding this, we don't need to start /coordinator/executor/main.go before sensors/executor/main.go
 	// so coordinator can discover the existed censors for the following function
-	keepListenDiscoverRequestFromCoordinator(ch)
+	keepListeningDiscoverRequestFromCoordinator(ch)
 
 	publishSensorDataToSensorQueue(ch)
 }
 
-func keepListenDiscoverRequestFromCoordinator(ch *amqp.Channel) {
-	discoveryQueue := queueutils.GetQueue("", ch)
+func keepListeningDiscoverRequestFromCoordinator(ch *amqp.Channel) {
+	discoveryQueue := queueutils.GetQueue("", ch, true)
 	ch.QueueBind(
 		discoveryQueue.Name, //name string,
 		"",                  //key string,
@@ -135,7 +135,7 @@ Payload:
 	Afhp5QFYPncQQAEPAQAAAA7OuQuXF2Cyw/5cAA==
 */
 func publishSensorDataToSensorQueue(ch *amqp.Channel) {
-	sensorDataQueue := queueutils.GetQueue(*name, ch)
+	sensorDataQueue := queueutils.GetQueue(*name, ch, false)
 
 	duration, _ := time.ParseDuration(strconv.Itoa(1000/int(*frequency)) + "ms")
 	signal := time.Tick(duration)
