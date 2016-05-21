@@ -1,3 +1,4 @@
+// !!! coordinator is between data consumers and data sources, including all the business logic about how to handle messages
 package coordinator
 
 import (
@@ -25,18 +26,24 @@ type QueuesListener struct {
 	ea      *EventAggregator                // publish events after receiving messages
 }
 
-func NewQueuesListener() *QueuesListener {
+func NewQueuesListener(ea *EventAggregator) *QueuesListener {
 	ql := QueuesListener{
 		sources: make(map[string]<-chan amqp.Delivery),
-		ea:      NewEventAggregator(),
+		ea:      ea,
 	}
 
 	ql.conn, ql.ch = queueutils.GetChannel(url)
 	return &ql
 }
 
+var dc *DatabaseConsumer
+
 func StartConsumingSensorData() {
-	ql := NewQueuesListener()
+	ea := NewEventAggregator()
+
+	dc = NewDatabaseConsumer(ea)
+	ql := NewQueuesListener(ea)
+
 	go ql.ListenForNewSource()
 }
 
@@ -67,6 +74,10 @@ func (ql *QueuesListener) ListenForNewSource() {
 	fmt.Println("Listening for new sources")
 	for msg := range msgs {
 		fmt.Println("New source discovered")
+
+		// before it only raises event if a new reading is arrived from an existing sensor,
+		// now also raises an event if a new sensor is discoverd
+		ql.ea.PublishEvent(queueutils.DataSourceDiscoveredEvent, string(msg.Body))
 
 		// for this new source (sensor data queue), start to receive its reading data
 		sensorDataQueueName := string(msg.Body)
@@ -104,7 +115,7 @@ func (ql *QueuesListener) AddListener(msgs <-chan amqp.Delivery) {
 			Value:     sensorMsg.Value,
 		}
 
-		ql.ea.PublishEvent("MessageReceived_"+msg.RoutingKey, eventData)
+		ql.ea.PublishEvent(queueutils.MessageReceivedEvent+msg.RoutingKey, eventData)
 	}
 }
 

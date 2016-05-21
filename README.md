@@ -14,20 +14,23 @@
         ```
       * Commands:
         ```
+        start: $ rabbitmq-server start
         $ rabbitmqctl status
         $ rabbitmqctl list_queues
         $ rabbitmqctl cluster_status
         $ rabbitmq-plugins list (for other message brokers)
-        $ rabbitmq-plugins enable rabbitmq_management (http://localhost:15672/)
+        $ rabbitmq-plugins enable rabbitmq_management (http://localhost:15672/, use guest/guest to login)
         $ rabbitmq-plugins disable rabbitmq_management
         ```
       * Golang support
         https://godoc.org/github.com/streadway/amqp, rabbitmq client with AMQP protocol
         Install: $ go get -u github.com/streadway/amqp
     * Postgres
+      * communicate with golang: https://github.com/lib/pq
   * Flow
     * Sensors keep publishing reading data to message queues
     * Consumers keep consuming messages and generate events (This event pattern allows data sources and consumers to be decoupled from each other in a highly concurrent system)
+    * Coordinator is between data consumers and data sources (sensors), including all the business logic about how to handle messages
     ```
     $ go run src/powerplant/coordinator/executor/main.go (consuming messages)
     $ go run src/powerplant/sensors/executor/main.go (publishing messages)
