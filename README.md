@@ -29,6 +29,10 @@
       * communicate with golang: https://github.com/lib/pq
       * listening port: 5432
       * pdAdmin for UI managements
+    * Web client:
+      * use RabbitMQ to push data from coordinator to web application
+      * use web socket to communicate between web application and browser
+      * UI: canvasjs.com
   * Flow
     * Sensors keep publishing reading data to message queues
     * Consumers keep consuming messages and generate events (This event pattern allows data sources and consumers to be decoupled from each other in a highly concurrent system)

@@ -31,8 +31,8 @@ var stepSize = flag.Float64("step", 0.1, "maximum allowable change per measureme
 
 var random = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-var value = random.Float64()*(*max-*min) + *min
-var normalValue = (*max-*min)/2 + *min
+var value float64
+var normalValue float64
 
 // calculate the sensor's next value
 func getNextSensorValue() {
@@ -52,6 +52,10 @@ func getNextSensorValue() {
 // StartPublishingSensorData publishes data from sensors to RabbitMQ
 func StartPublishingSensorData() {
 	flag.Parse()
+
+	// put here, otherwise, it'll always use default values.
+	value = random.Float64()*(*max-*min) + *min
+	normalValue = (*max-*min)/2 + *min
 
 	conn, ch := queueutils.GetChannel(url)
 	defer conn.Close()
