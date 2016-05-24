@@ -168,6 +168,6 @@ func publishSensorDataToSensorQueue(ch *amqp.Channel) {
 			false,                //immediate bool,
 			msg)                  //msg amqp.Publishing)
 
-		log.Printf("Sensor reading message sent, value: %v\n", value)
+		log.Printf("Sensor: %v reading message sent, value: %v\n", *name, value)
 	}
 }

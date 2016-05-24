@@ -114,6 +114,7 @@ func (ql *QueuesListener) AddListener(msgs <-chan amqp.Delivery) {
 			Timestamp: sensorMsg.Timestamp,
 			Value:     sensorMsg.Value,
 		}
+		fmt.Printf("publish event: %+v", eventData)
 
 		ql.ea.PublishEvent(queueutils.MessageReceivedEvent+msg.RoutingKey, eventData)
 	}
