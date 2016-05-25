@@ -37,11 +37,13 @@ func NewQueuesListener(ea *EventAggregator) *QueuesListener {
 }
 
 var dc *DatabaseConsumer
+var wc *WebappConsumer
 
 func StartConsumingSensorData() {
 	ea := NewEventAggregator()
 
 	dc = NewDatabaseConsumer(ea)
+	wc = NewWebappConsumer(ea)
 	ql := NewQueuesListener(ea)
 
 	go ql.ListenForNewSource()

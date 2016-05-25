@@ -12,12 +12,21 @@ const SensorListQueue = "SensorList"
 
 // SensorDiscoveryExchange is the exchange name for queue listeners to discover previous started data queues if the coordinator started after the data queues
 const SensorDiscoveryExchange = "SensorDiscovery"
+const PersistReadingsQueue = "PersistReadings"
+
+// WebappSourceExchange is used to broadcast the name of the sensors
+const WebappSourceExchange = "WebappSources"
+
+// WebappReadingsExchange is used to send out readings to the web applications.
+const WebappReadingsExchange = "WebappReadings"
+
+// WebappDiscoveryQueue is used by the web applications to let the coordinator know
+// 	that one of them would like to get a list of all of the available sources.
+const WebappDiscoveryQueue = "WebappDiscovery"
 
 // event names
 const DataSourceDiscoveredEvent = "DataSourceDiscovered"
 const MessageReceivedEvent = "MessageReceived_"
-
-const PersistReadingsQueue = "PersistReadings"
 
 // GetChannel returns the connection and channel from RabbitMQ
 func GetChannel(url string) (*amqp.Connection, *amqp.Channel) {
