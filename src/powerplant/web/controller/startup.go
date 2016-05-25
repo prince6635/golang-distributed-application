@@ -2,12 +2,15 @@ package controller
 
 import "net/http"
 
+var webSocket = newWebsocketController()
+
 func Initialize() {
 	registerRoutes()
 	registerFileServers()
 }
 
 func registerRoutes() {
+	http.HandleFunc("/ws", webSocket.handleMessage)
 }
 
 func registerFileServers() {

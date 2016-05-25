@@ -31,7 +31,7 @@
       * pdAdmin for UI managements
     * Web client: http://localhost:3000/public/
       * use RabbitMQ to push data from coordinator to web application
-      * use web socket to communicate between web application and browser
+      * use web socket to communicate between web application and browser, http://www.gorillatoolkit.org/pkg/websocket
       * UI: canvasjs.com
   * Flow
     * Sensors keep publishing reading data to message queues
